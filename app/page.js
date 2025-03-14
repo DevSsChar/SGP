@@ -142,7 +142,43 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      <section className="py-20 bg-[hsla(221,83%,53%,0.04)]">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="opacity-0 translate-y-4 animate-[fade-in-up_400ms_ease-out_forwards]">
+              <div className="bg-white/70 backdrop-blur-md border border-white/20 rounded-xl shadow-sm transition-all duration-300 hover:scale-104 hover:shadow-xl text-center">
+                <div className="p-6 py-12 px-6 md:px-10">
+                  <h2 className="text-3xl md:text-4xl font-medium mb-6">Ready to Find Your Ideal Career Path?</h2>
+                  <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                    Join thousands of students and professionals who have discovered fulfilling career paths tailored to their unique profiles.
+                  </p>
+                  <Link 
+                    className="px-8 py-3 rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-all duration-300 hover:scale-105 inline-flex items-center justify-center gap-2 font-medium group" 
+                    href="/profile"
+                  >
+                    Start Your Journey
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="18" 
+                      height="18" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      className="lucide lucide-arrow-right transition-transform duration-300 group-hover:translate-x-1"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

@@ -8,6 +8,7 @@ export default function ProfilePage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -52,8 +53,61 @@ export default function ProfilePage() {
     }
   };
 
+  const validateStep = (step) => {
+    const newErrors = {};
+    
+    if (step === 1) {
+      if (!formData.fullName.trim()) {
+        newErrors.fullName = 'Full Name is required';
+      }
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Please enter a valid email address';
+      }
+      if (!formData.age.trim()) {
+        newErrors.age = 'Age is required';
+      }
+      if (!formData.location.trim()) {
+        newErrors.location = 'Location is required';
+      }
+    }
+
+    if(step==4)
+    {
+        if(!formData.skills.technical.trim())
+        {
+            newErrors.technical = 'Technical Skills are required';
+        }
+        if(!formData.skills.soft.trim())
+        {
+            newErrors.soft = 'Soft Skills are required';
+        }
+        if(!formData.skills.languages.trim())
+        {
+            newErrors.languages = 'Languages are required';
+        }
+        if(!formData.skills.interests.trim())
+        {
+            newErrors.interests = 'Interests are required';
+        }
+        
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleNext = async () => {
-    setCurrentStep(prev => prev + 1);
+    if (validateStep(currentStep)) {
+      if (currentStep === 4) {
+        // Handle form submission
+        console.log('Form submitted:', formData);
+        // Add your submission logic here
+      } else {
+        setCurrentStep(prev => prev + 1);
+      }
+    }
   };
 
   const handlePrevious = () => {
@@ -105,9 +159,14 @@ export default function ProfilePage() {
                   value={formData.fullName}
                   onChange={handleInputChange}
                   placeholder="Your full name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.fullName ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   required
                 />
+                {errors.fullName && (
+                  <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -119,13 +178,18 @@ export default function ProfilePage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.email ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   required
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Age
+                  Age <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -133,12 +197,18 @@ export default function ProfilePage() {
                   value={formData.age}
                   onChange={handleInputChange}
                   placeholder="Your age"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.age ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  required
                 />
+                {errors.age && (
+                  <p className="mt-1 text-sm text-red-500">{errors.age}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
+                  Location <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -146,8 +216,14 @@ export default function ProfilePage() {
                   value={formData.location}
                   onChange={handleInputChange}
                   placeholder="City, Country"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.location ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  required
                 />
+                {errors.location && (
+                  <p className="mt-1 text-sm text-red-500">{errors.location}</p>
+                )}
               </div>
             </div>
           )}
@@ -155,6 +231,9 @@ export default function ProfilePage() {
           {currentStep === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold mb-6">Education</h2>
+              <h6>
+                <span className='text-green-400'>* optional</span>
+              </h6>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Degree</label>
                 <input
@@ -205,6 +284,9 @@ export default function ProfilePage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold mb-6">Experience</h2>
+              <h6>
+                <span className='text-green-400'>* optional</span>
+              </h6>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
                 <input
@@ -256,48 +338,80 @@ export default function ProfilePage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold mb-6">Skills & Interests</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Technical Skills</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Technical Skills <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   name="skills.technical"
                   value={formData.skills.technical}
                   onChange={handleInputChange}
                   placeholder="Your technical skills"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.technical ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   rows="2"
+                  required
                 />
+                {errors.technical && (
+                  <p className="mt-1 text-sm text-red-500">{errors.technical}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Soft Skills</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Soft Skills <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   name="skills.soft"
                   value={formData.skills.soft}
                   onChange={handleInputChange}
                   placeholder="Your soft skills"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.soft ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   rows="2"
+                  required
                 />
+                {errors.soft && (
+                  <p className="mt-1 text-sm text-red-500">{errors.soft}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Languages</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Languages <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="skills.languages"
                   value={formData.skills.languages}
                   onChange={handleInputChange}
                   placeholder="Languages you know"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.languages ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  required
                 />
+                {errors.languages && (
+                  <p className="mt-1 text-sm text-red-500">{errors.languages}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Interests</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Interests <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   name="skills.interests"
                   value={formData.skills.interests}
                   onChange={handleInputChange}
                   placeholder="Your interests and hobbies"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.interests ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   rows="2"
+                  required
                 />
+                {errors.interests && (
+                  <p className="mt-1 text-sm text-red-500">{errors.interests}</p>
+                )}
               </div>
             </div>
           )}

@@ -66,7 +66,7 @@ const Navbar = () => {
               }`} href="/learning-path">Learning Path</Link>
             </nav>
             <div className="flex items-center gap-2">
-              <Link className="py-2 px-4 text-sm rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors" href="/profile">Get Started</Link>
+              <Link className="py-2 px-4 text-sm rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors" href="/login">Get Started</Link>
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="md:hidden p-2 rounded-md hover:bg-muted text-gray-900"

@@ -17,7 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} min-h-screen flex flex-col`}>
+      <body className={`${inter.variable} min-h-screen flex flex-col bg-[hsla(0,0%,100%,1)] text-black`}>
         <SessionWrapper>
           <div className="absolute inset-0 z-[-2] bg-[hsla(0,0%,100%,1)] bg-[radial-gradient(100%_50%_at_50%_0%,hsla(210,100%,50%,0.13)_0,hsla(210,100%,50%,0)_50%,hsla(210,100%,50%,0)_100%)]"></div>
           <Navbar />

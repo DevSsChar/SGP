@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-// import Navbar from "@/components/Navbar";
 export default function Home() {
   return (
     <>
@@ -11,54 +10,39 @@ export default function Home() {
         </div>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div 
+            <div
               className="opacity-0 translate-y-4 animate-[fade-in-up_400ms_ease-out_forwards]"
             >
               <div className="inline-flex items-center px-3 py-1 mb-6 text-sm font-medium rounded-full bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]">
                 AI-Powered Career Guidance
               </div>
             </div>
-            <div 
+            <div
               className="opacity-0 translate-y-4 animate-[fade-in-up_400ms_ease-out_100ms_forwards]"
             >
-              <h1 className="text-4xl md:text-6xl font-medium mb-6">
+              <h1 className="text-4xl md:text-6xl  mb-6">
                 Discover Your Perfect <span className="text-[hsla(221,83%,53%,1)]">Career Path</span>
               </h1>
             </div>
-            <div 
+            <div
               className="opacity-0 translate-y-4 animate-[fade-in-up_400ms_ease-out_200ms_forwards]"
             >
               <p className="text-lg md:text-xl mb-10 text-muted-foreground max-w-3xl mx-auto">
                 Our AI-driven platform analyzes your skills, interests, and experience to provide personalized career recommendations and learning opportunities.
               </p>
             </div>
-            <div 
+            <div
               className="opacity-0 translate-y-4 animate-[fade-in-up_400ms_ease-out_300ms_forwards]"
             >
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  className="px-8 py-3 rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors flex items-center justify-center gap-2 font-medium" 
+                <Link
+                  className="px-8 py-3 rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors flex items-center justify-center gap-2 font-medium"
                   href="/profile"
                 >
                   Get Started
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="18" 
-                    height="18" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    className="lucide lucide-arrow-right"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path>
-                  </svg>
                 </Link>
-                <Link 
-                  href="#how-it-works" 
+                <Link
+                  href="#how-it-works"
                   className="px-8 py-3 rounded-md bg-[#dee9f5] text-foreground hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
                 >
                   Learn More
@@ -152,21 +136,21 @@ export default function Home() {
                   <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                     Join thousands of students and professionals who have discovered fulfilling career paths tailored to their unique profiles.
                   </p>
-                  <Link 
-                    className="px-8 py-3 rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-all duration-300 hover:scale-105 inline-flex items-center justify-center gap-2 font-medium group" 
+                  <Link
+                    className="px-8 py-3 rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-all duration-300 hover:scale-105 inline-flex items-center justify-center gap-2 font-medium group"
                     href="/profile"
                   >
                     Start Your Journey
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="18" 
-                      height="18" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="lucide lucide-arrow-right transition-transform duration-300 group-hover:translate-x-1"
                     >
                       <path d="M5 12h14"></path>

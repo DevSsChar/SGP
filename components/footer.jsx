@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer=()=>{
     return (
-        <footer className="border-t bg-background/50 backdrop-blur-sm mt-20">
+        <footer className="border-t bg-[hsla(221,83%,53%,0.05)] backdrop-blur-sm mt-20">
         <div className="container mx-auto px-4 md:px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">

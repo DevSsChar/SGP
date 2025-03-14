@@ -72,7 +72,7 @@ const LoginPage = () => {
 
         <p className="mt-8 text-center text-sm text-gray-600">
           Don't have an account?{' '}
-          <Link href="/register" className="font-medium text-[hsla(221,83%,53%,1)] hover:text-[hsla(221,83%,53%,0.8)]">
+          <Link href="/login" className="font-medium text-[hsla(221,83%,53%,1)] hover:text-[hsla(221,83%,53%,0.8)]">
             Sign up
           </Link>
         </p>

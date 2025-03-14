@@ -1,14 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import SessionWrapper from "@/components/SessionWrapper";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata = {
@@ -19,10 +17,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${inter.variable} min-h-screen flex flex-col`}>
+        <SessionWrapper>
+          <div className="absolute inset-0 z-[-2] bg-[hsla(0,0%,100%,1)] bg-[radial-gradient(100%_50%_at_50%_0%,hsla(210,100%,50%,0.13)_0,hsla(210,100%,50%,0)_50%,hsla(210,100%,50%,0)_100%)]"></div>
+          <Navbar />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </SessionWrapper>
       </body>
     </html>
   );

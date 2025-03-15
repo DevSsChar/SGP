@@ -9,6 +9,7 @@ const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
+    const { data: session } = useSession()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -66,7 +67,26 @@ const Navbar = () => {
               }`} href="/learning-path">Learning Path</Link>
             </nav>
             <div className="flex items-center gap-2">
-              <Link className="py-2 px-4 text-sm rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors" href="/login">Get Started</Link>
+              {session ? (
+                <>
+                  <span className="py-2 px-4 text-sm rounded-md bg-[hsla(221,83%,53%,1)] text-white">
+                    Welcome {session.user.name}
+                  </span>
+                  <button
+                    onClick={() => signOut()}
+                    className="py-2 px-4 text-sm rounded-md text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => signIn()}
+                  className="py-2 px-4 text-sm rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors"
+                >
+                  Sign In
+                </button>
+              )}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="md:hidden p-2 rounded-md hover:bg-muted text-gray-900"

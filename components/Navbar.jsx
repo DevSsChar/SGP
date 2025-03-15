@@ -54,6 +54,11 @@ const Navbar = () => {
                   scrolled || pathname !== '/'
                       ? 'text-muted-foreground hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`} href="/dashboard">Dashboard</Link>
+              <Link className={`px-4 py-2 rounded-md text-sm transition-all ${
+                  scrolled || pathname !== '/'
+                      ? 'text-muted-foreground hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`} href="/assessment">Assessment</Link>
               <Link className={`px-4 py-2 rounded-md text-sm transition-all ${
                   scrolled || pathname !== '/'
@@ -122,6 +127,13 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Profile
+                </Link>
+                <Link 
+                  href="/dashboard" 
+                  className="px-4 py-2 rounded-md text-sm text-gray-900 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)] transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
                 </Link>
                 <Link 
                   href="/assessment" 

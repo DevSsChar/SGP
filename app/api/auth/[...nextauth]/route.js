@@ -71,7 +71,7 @@ const handler = NextAuth({
         const dbUser = await User.findOne({ Email: session.user.email });
         if (dbUser) {
           session.user.dbId = dbUser._id;
-          session.user.profileCompleted = Boolean(dbUser.Age && dbUser.Location);
+          // session.user.profileCompleted = Boolean(dbUser.Age && dbUser.Location);
         }
       }
       return session;

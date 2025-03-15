@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { fetchuser, updateProfile } from '@/actions/useractions';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -10,88 +11,103 @@ export default function ProfilePage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    age: '',
-    location: '',
-    education: {
-      degree: '',
-      institution: '',
-      graduationYear: '',
-      grade: ''
-    },
-    experience: {
-      company: '',
-      position: '',
-      duration: '',
-      description: ''
-    },
-    skills: {
-      technical: '',
-      soft: '',
-      languages: '',
-      interests: ''
-    }
+    FullName: '',
+    Email: '',
+    Age: '',
+    Location: '',
+    // Education fields
+    Degree: '',
+    Institution: '',
+    GraduationYear: '',
+    Grade: '',
+    // Experience fields
+    Company: '',
+    Position: '',
+    Duration: '',
+    Description: '',
+    // Skills fields
+    Skills: '',
+    SoftSKills: '',
+    Languages: '',
+    Interests: ''
   });
+
+  // Load user data when component mounts
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (session?.user?.email) {
+        try {
+          const userProfile = await fetchuser(session.user.email);
+          if (userProfile) {
+            setFormData({
+              FullName: userProfile.FullName || '',
+              Email: userProfile.Email || '',
+              Age: userProfile.Age || '',
+              Location: userProfile.Location || '',
+              Degree: userProfile.Degree || '',
+              Institution: userProfile.Institution || '',
+              GraduationYear: userProfile.GraduationYear || '',
+              Grade: userProfile.Grade || '',
+              Company: userProfile.Company || '',
+              Position: userProfile.Position || '',
+              Duration: userProfile.Duration || '',
+              Description: userProfile.Description || '',
+              Skills: userProfile.Skills || '',
+              SoftSKills: userProfile.SoftSKills || '',
+              Languages: userProfile.Languages || '',
+              Interests: userProfile.Interests || ''
+            });
+          }
+        } catch (error) {
+          console.error('Error loading user profile:', error);
+        }
+      }
+    };
+
+    loadUserProfile();
+  }, [session]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [section, field] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [field]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const validateStep = (step) => {
     const newErrors = {};
     
     if (step === 1) {
-      if (!formData.fullName.trim()) {
-        newErrors.fullName = 'Full Name is required';
+      if (!formData.FullName.trim()) {
+        newErrors.FullName = 'Full Name is required';
       }
-      if (!formData.email.trim()) {
-        newErrors.email = 'Email is required';
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = 'Please enter a valid email address';
+      if (!formData.Email.trim()) {
+        newErrors.Email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(formData.Email)) {
+        newErrors.Email = 'Please enter a valid email address';
       }
-      if (!formData.age.trim()) {
-        newErrors.age = 'Age is required';
+      if (!formData.Age) {
+        newErrors.Age = 'Age is required';
       }
-      if (!formData.location.trim()) {
-        newErrors.location = 'Location is required';
+      if (!formData.Location.trim()) {
+        newErrors.Location = 'Location is required';
       }
     }
 
-    if(step==4)
-    {
-        if(!formData.skills.technical.trim())
-        {
-            newErrors.technical = 'Technical Skills are required';
-        }
-        if(!formData.skills.soft.trim())
-        {
-            newErrors.soft = 'Soft Skills are required';
-        }
-        if(!formData.skills.languages.trim())
-        {
-            newErrors.languages = 'Languages are required';
-        }
-        if(!formData.skills.interests.trim())
-        {
-            newErrors.interests = 'Interests are required';
-        }
-        
+    if(step === 4) {
+      if(!formData.Skills.trim()) {
+        newErrors.Skills = 'Technical Skills are required';
+      }
+      if(!formData.SoftSKills.trim()) {
+        newErrors.SoftSKills = 'Soft Skills are required';
+      }
+      if(!formData.Languages.trim()) {
+        newErrors.Languages = 'Languages are required';
+      }
+      if(!formData.Interests.trim()) {
+        newErrors.Interests = 'Interests are required';
+      }
     }
     
     setErrors(newErrors);
@@ -101,9 +117,34 @@ export default function ProfilePage() {
   const handleNext = async () => {
     if (validateStep(currentStep)) {
       if (currentStep === 4) {
-        // Handle form submission
-        console.log('Form submitted:', formData);
-        // Add your submission logic here
+        try {
+          // Create FormData to match the User schema
+          const formDataToSend = new FormData();
+          Object.keys(formData).forEach(key => {
+            // Convert empty strings to appropriate types based on schema
+            let value = formData[key];
+            if (key === 'Age' || key === 'GraduationYear' || key === 'Grade') {
+              value = value === '' ? null : Number(value);
+            }
+            if (key === 'Duration' && value) {
+              value = new Date(value).toISOString();
+            }
+            formDataToSend.append(key, value);
+          });
+
+          // Update user profile in database
+          const result = await updateProfile(formDataToSend, session.user.email);
+          
+          if (result && result.error) {
+            alert(result.error);
+          } else {
+            alert('Profile updated successfully!');
+            router.push('/dashboard');
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          alert('Failed to update profile. Please try again.');
+        }
       } else {
         setCurrentStep(prev => prev + 1);
       }
@@ -155,17 +196,17 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="FullName"
+                  value={formData.FullName}
                   onChange={handleInputChange}
                   placeholder="Your full name"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.fullName ? 'border-red-500' : 'border-gray-300'
+                    errors.FullName ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.fullName && (
-                  <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+                {errors.FullName && (
+                  <p className="mt-1 text-sm text-red-500">{errors.FullName}</p>
                 )}
               </div>
               <div>
@@ -174,17 +215,17 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
+                  name="Email"
+                  value={formData.Email}
                   onChange={handleInputChange}
                   placeholder="you@example.com"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
+                    errors.Email ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                {errors.Email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.Email}</p>
                 )}
               </div>
               <div>
@@ -193,17 +234,17 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="number"
-                  name="age"
-                  value={formData.age}
+                  name="Age"
+                  value={formData.Age}
                   onChange={handleInputChange}
                   placeholder="Your age"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.age ? 'border-red-500' : 'border-gray-300'
+                    errors.Age ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.age && (
-                  <p className="mt-1 text-sm text-red-500">{errors.age}</p>
+                {errors.Age && (
+                  <p className="mt-1 text-sm text-red-500">{errors.Age}</p>
                 )}
               </div>
               <div>
@@ -212,17 +253,17 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="text"
-                  name="location"
-                  value={formData.location}
+                  name="Location"
+                  value={formData.Location}
                   onChange={handleInputChange}
                   placeholder="City, Country"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.location ? 'border-red-500' : 'border-gray-300'
+                    errors.Location ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.location && (
-                  <p className="mt-1 text-sm text-red-500">{errors.location}</p>
+                {errors.Location && (
+                  <p className="mt-1 text-sm text-red-500">{errors.Location}</p>
                 )}
               </div>
             </div>
@@ -238,8 +279,8 @@ export default function ProfilePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Degree</label>
                 <input
                   type="text"
-                  name="education.degree"
-                  value={formData.education.degree}
+                  name="Degree"
+                  value={formData.Degree}
                   onChange={handleInputChange}
                   placeholder="Your degree"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -249,8 +290,8 @@ export default function ProfilePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Institution</label>
                 <input
                   type="text"
-                  name="education.institution"
-                  value={formData.education.institution}
+                  name="Institution"
+                  value={formData.Institution}
                   onChange={handleInputChange}
                   placeholder="Your institution"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -259,9 +300,9 @@ export default function ProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
                 <input
-                  type="text"
-                  name="education.graduationYear"
-                  value={formData.education.graduationYear}
+                  type="number"
+                  name="GraduationYear"
+                  value={formData.GraduationYear}
                   onChange={handleInputChange}
                   placeholder="Year of graduation"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -270,12 +311,13 @@ export default function ProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Grade/CGPA</label>
                 <input
-                  type="text"
-                  name="education.grade"
-                  value={formData.education.grade}
+                  type="number"
+                  name="Grade"
+                  value={formData.Grade}
                   onChange={handleInputChange}
                   placeholder="Your grade or CGPA"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  step="0.01"
                 />
               </div>
             </div>
@@ -291,8 +333,8 @@ export default function ProfilePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
                 <input
                   type="text"
-                  name="experience.company"
-                  value={formData.experience.company}
+                  name="Company"
+                  value={formData.Company}
                   onChange={handleInputChange}
                   placeholder="Company name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -302,8 +344,8 @@ export default function ProfilePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
                 <input
                   type="text"
-                  name="experience.position"
-                  value={formData.experience.position}
+                  name="Position"
+                  value={formData.Position}
                   onChange={handleInputChange}
                   placeholder="Your position"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -312,19 +354,18 @@ export default function ProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
                 <input
-                  type="text"
-                  name="experience.duration"
-                  value={formData.experience.duration}
+                  type="date"
+                  name="Duration"
+                  value={formData.Duration ? new Date(formData.Duration).toISOString().split('T')[0] : ''}
                   onChange={handleInputChange}
-                  placeholder="Duration of employment"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
-                  name="experience.description"
-                  value={formData.experience.description}
+                  name="Description"
+                  value={formData.Description}
                   onChange={handleInputChange}
                   placeholder="Brief description of your role"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -342,18 +383,18 @@ export default function ProfilePage() {
                   Technical Skills <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  name="skills.technical"
-                  value={formData.skills.technical}
+                  name="Skills"
+                  value={formData.Skills}
                   onChange={handleInputChange}
                   placeholder="Your technical skills"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.technical ? 'border-red-500' : 'border-gray-300'
+                    errors.Skills ? 'border-red-500' : 'border-gray-300'
                   }`}
                   rows="2"
                   required
                 />
-                {errors.technical && (
-                  <p className="mt-1 text-sm text-red-500">{errors.technical}</p>
+                {errors.Skills && (
+                  <p className="mt-1 text-sm text-red-500">{errors.Skills}</p>
                 )}
               </div>
               <div>
@@ -361,18 +402,18 @@ export default function ProfilePage() {
                   Soft Skills <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  name="skills.soft"
-                  value={formData.skills.soft}
+                  name="SoftSKills"
+                  value={formData.SoftSKills}
                   onChange={handleInputChange}
                   placeholder="Your soft skills"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.soft ? 'border-red-500' : 'border-gray-300'
+                    errors.SoftSKills ? 'border-red-500' : 'border-gray-300'
                   }`}
                   rows="2"
                   required
                 />
-                {errors.soft && (
-                  <p className="mt-1 text-sm text-red-500">{errors.soft}</p>
+                {errors.SoftSKills && (
+                  <p className="mt-1 text-sm text-red-500">{errors.SoftSKills}</p>
                 )}
               </div>
               <div>
@@ -381,17 +422,17 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="text"
-                  name="skills.languages"
-                  value={formData.skills.languages}
+                  name="Languages"
+                  value={formData.Languages}
                   onChange={handleInputChange}
                   placeholder="Languages you know"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.languages ? 'border-red-500' : 'border-gray-300'
+                    errors.Languages ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.languages && (
-                  <p className="mt-1 text-sm text-red-500">{errors.languages}</p>
+                {errors.Languages && (
+                  <p className="mt-1 text-sm text-red-500">{errors.Languages}</p>
                 )}
               </div>
               <div>
@@ -399,18 +440,18 @@ export default function ProfilePage() {
                   Interests <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  name="skills.interests"
-                  value={formData.skills.interests}
+                  name="Interests"
+                  value={formData.Interests}
                   onChange={handleInputChange}
                   placeholder="Your interests and hobbies"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.interests ? 'border-red-500' : 'border-gray-300'
+                    errors.Interests ? 'border-red-500' : 'border-gray-300'
                   }`}
                   rows="2"
                   required
                 />
-                {errors.interests && (
-                  <p className="mt-1 text-sm text-red-500">{errors.interests}</p>
+                {errors.Interests && (
+                  <p className="mt-1 text-sm text-red-500">{errors.Interests}</p>
                 )}
               </div>
             </div>

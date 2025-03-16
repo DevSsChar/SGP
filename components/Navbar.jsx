@@ -63,7 +63,7 @@ const Navbar = () => {
                       ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
                       : scrolled || pathname !== '/'
                       ? 'text-gray-600 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
-                      : 'text-gray-100 hover:text-white hover:bg-white/10'
+                      : 'text-black-100 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
                   }`}
                 >
                   {item.label}

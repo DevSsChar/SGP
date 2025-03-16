@@ -1,13 +1,13 @@
 "use client"
-import React from 'react'
+import { signIn, signOut, useSession } from "next-auth/react"
 import Link from 'next/link'
-import { useSession, signIn, signOut } from "next-auth/react" 
-import { useRef, useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
     const pathname = usePathname();
     const { data: session } = useSession()
 
@@ -30,7 +30,14 @@ const Navbar = () => {
         { href: '/dashboard', label: 'Dashboard' },
         { href: '/assessment', label: 'Assessment' },
         { href: '/recommendations', label: 'Recommendations' },
-        { href: '/learning-path', label: 'Learning Path' },
+        {
+            href: '/learning-path',
+            label: 'Learning Path',
+            subItems: [
+                { href: '/learning-path/courses', label: 'Courses' },
+                { href: '/learning-path/resources', label: 'Resources' },
+            ]
+        },
     ];
 
     return(
@@ -55,19 +62,66 @@ const Navbar = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1 overflow-x-auto flex-grow justify-center mx-4">
               {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                    pathname === item.href
-                      ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
-                      : scrolled || pathname !== '/'
-                      ? 'text-gray-600 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
-                      : 'text-gray-100 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  {item.label}
-                </Link>
+                <div key={item.href} className="relative group">
+                  {item.subItems ? (
+                    <>
+                      <button
+                        onClick={() => setIsLearningPathOpen(!isLearningPathOpen)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap flex items-center gap-1 ${
+                          pathname.startsWith(item.href)
+                            ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
+                            : scrolled || pathname !== '/'
+                            ? 'text-gray-600 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
+                            : 'text-gray-100 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        {item.label}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={`transition-transform duration-200 ${isLearningPathOpen ? 'rotate-180' : ''}`}
+                        >
+                          <path d="m6 9 6 6 6-6"/>
+                        </svg>
+                      </button>
+                      {/* Dropdown Menu */}
+                      <div className={`absolute top-full left-0 mt-1 py-2 bg-white rounded-lg shadow-lg border border-gray-100 min-w-[160px] transition-all duration-200 ${
+                        isLearningPathOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                      }`}>
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[hsla(221,83%,53%,0.1)] hover:text-[hsla(221,83%,53%,1)]"
+                            onClick={() => setIsLearningPathOpen(false)}
+                          >
+                            {subItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                        pathname === item.href
+                          ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
+                          : scrolled || pathname !== '/'
+                          ? 'text-gray-600 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
+                          : 'text-gray-100 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
               ))}
             </nav>
 
@@ -116,18 +170,65 @@ const Navbar = () => {
             <div className="px-4 py-3">
               <div className="flex flex-col space-y-1">
                 {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      pathname === item.href
-                        ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
-                        : 'text-gray-700 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
+                  <React.Fragment key={item.href}>
+                    {item.subItems ? (
+                      <>
+                        <button
+                          onClick={() => setIsLearningPathOpen(!isLearningPathOpen)}
+                          className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
+                            pathname.startsWith(item.href)
+                              ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
+                              : 'text-gray-700 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
+                          }`}
+                        >
+                          {item.label}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className={`transition-transform duration-200 ${isLearningPathOpen ? 'rotate-180' : ''}`}
+                          >
+                            <path d="m6 9 6 6 6-6"/>
+                          </svg>
+                        </button>
+                        {isLearningPathOpen && (
+                          <div className="pl-4">
+                            {item.subItems.map((subItem) => (
+                              <Link
+                                key={subItem.href}
+                                href={subItem.href}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-[hsla(221,83%,53%,0.1)] hover:text-[hsla(221,83%,53%,1)]"
+                                onClick={() => {
+                                  setIsLearningPathOpen(false);
+                                  setIsMenuOpen(false);
+                                }}
+                              >
+                                {subItem.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          pathname === item.href
+                            ? 'bg-[hsla(221,83%,53%,0.1)] text-[hsla(221,83%,53%,1)]'
+                            : 'text-gray-700 hover:text-[hsla(221,83%,53%,1)] hover:bg-[hsla(221,83%,53%,0.1)]'
+                        }`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             </div>

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { fetchuser } from '@/actions/useractions';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -58,12 +58,20 @@ export default function Dashboard() {
               <p className="text-gray-600 mt-1">{userData.Email}</p>
               <p className="text-gray-600">{userData.Location}</p>
             </div>
-            <a
-              href="/profile"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-            >
-              Edit Profile
-            </a>
+            <div className="flex gap-4">
+              <a
+                href="/assessment"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Take Career Quiz
+              </a>
+              <a
+                href="/profile"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Edit Profile
+              </a>
+            </div>
           </div>
         </div>
 

@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
-const { Schema, model } = mongoose;
 
-const UserSchema = new Schema({
+const UserSchema = new mongoose.Schema({
     FullName: {
         type: String,
         required: true,
     },
     Email: {
         type: String,
+        required: true,
+        unique: true,
     },
     Age: {
         type: Number,
@@ -51,13 +52,16 @@ const UserSchema = new Schema({
     Interests: {
         type: String,
     },
+    githubId: {
+        type: String,
+        unique: true,
+    },
     updatedAt: {
         type: Date,
         default: Date.now,
     },
 });
 
-// Check if the model already exists before defining it
-const User = mongoose.models.User || model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 export default User;

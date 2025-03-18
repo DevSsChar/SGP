@@ -1,8 +1,8 @@
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import GithubProvider from 'next-auth/providers/github';
 import connectDB from '@/db/connectDB';
 import User from '@/models/User';
+import NextAuth from 'next-auth';
+import GithubProvider from 'next-auth/providers/github';
+import GoogleProvider from 'next-auth/providers/google';
 
 const handler = NextAuth({
   providers: [
@@ -44,10 +44,7 @@ const handler = NextAuth({
             Languages: "",
             Interests: "",
             githubId: profile.id,
-            // avatar: profile.avatar_url
           });
-          
-          console.log('New user created:', dbUser);
         }
 
         return true;
@@ -59,7 +56,6 @@ const handler = NextAuth({
     async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id;
-        // Add additional user info to token if needed
         token.githubId = profile?.id;
       }
       return token;
@@ -67,11 +63,9 @@ const handler = NextAuth({
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
-        // Add any additional user info to session if needed
         const dbUser = await User.findOne({ Email: session.user.email });
         if (dbUser) {
           session.user.dbId = dbUser._id;
-          // session.user.profileCompleted = Boolean(dbUser.Age && dbUser.Location);
         }
       }
       return session;
@@ -79,4 +73,4 @@ const handler = NextAuth({
   },
 });
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

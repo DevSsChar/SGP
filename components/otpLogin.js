@@ -21,9 +21,7 @@ const OtpLogin = () => {
   const [resendCountdown, setResendCountdown] = useState(0);
   const [isPending, startTransition] = useTransition();
   const [isOtpSent, setIsOtpSent] = useState(false);
-
-  // For demo purposes - in a real app, this would be handled by your backend
-  const [demoOtp] = useState("123456");
+  const [currentOtp, setCurrentOtp] = useState(null);
 
   const handleResendCountdown = () => {
     let count = 60;
@@ -42,22 +40,38 @@ const OtpLogin = () => {
     setError("");
     setSuccess("");
 
+    // Basic phone number validation
+    if (!phoneNumber.match(/^\+?[1-9]\d{1,14}$/)) {
+      setError("Please enter a valid phone number with country code (e.g., +1234567890)");
+      return;
+    }
+
+    setResendCountdown(60);
+
     startTransition(async () => {
       try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Basic phone number validation
-        if (!phoneNumber.match(/^\+?[1-9]\d{1,14}$/)) {
-          setError("Please enter a valid phone number with country code");
-          return;
+        const response = await fetch('/api/send-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ phoneNumber }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to send OTP');
         }
 
+        setCurrentOtp(data.otp); // Store OTP for verification
         setIsOtpSent(true);
-        setSuccess("OTP sent successfully");
+        setSuccess("OTP sent successfully. Please check your phone.");
         handleResendCountdown();
       } catch (err) {
-        setError("Failed to send OTP. Please try again.");
+        console.error('Error:', err);
+        setError(err.message || "Failed to send OTP. Please try again.");
+        setResendCountdown(0);
       }
     });
   };
@@ -68,12 +82,8 @@ const OtpLogin = () => {
       setSuccess("");
 
       try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        if (otp === demoOtp) {
+        if (otp === currentOtp) {
           setSuccess("OTP verified successfully!");
-          // Simulate successful login
           setTimeout(() => {
             router.replace("/");
           }, 1000);
@@ -120,7 +130,7 @@ const OtpLogin = () => {
           </p>
           {isOtpSent && (
             <p className="mt-2 text-xs text-gray-500">
-              Demo OTP: {demoOtp}
+              For testing: Your OTP is {currentOtp}
             </p>
           )}
         </div>

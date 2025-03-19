@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { fetchuser, updateProfile } from '@/actions/useractions';
 import { validateInput } from '@/utils/geminiValidation';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -126,25 +126,27 @@ export default function ProfilePage() {
       // Degree validation (if provided)
       if (formData.Degree.trim()) {
         const isValidDegree = await validateInput('degree', formData.Degree);
-        console.log(isValidDegree);
+        console.log('Degree validation result:', isValidDegree, 'for value:', formData.Degree);
         if (!isValidDegree) {
-          newErrors.Degree = 'Please enter a valid degree';
+          newErrors.Degree = 'Please enter a valid degree (e.g., B.Tech, BCA, MCA)';
         }
       }
 
       // Institution validation (if provided)
       if (formData.Institution.trim()) {
         const isValidInstitution = await validateInput('institution', formData.Institution);
-        console.log(isValidInstitution);
+        console.log('Institution validation result:', isValidInstitution, 'for value:', formData.Institution);
         if (!isValidInstitution) {
-          newErrors.Institution = 'Please enter a valid institution';
+          newErrors.Institution = 'Please enter a valid institution name or abbreviation';
         }
       }
 
       // Graduation Year validation (if provided)
       if (formData.GraduationYear) {
-        const isValidYear = await validateInput('graduation year', formData.GraduationYear);
-        console.log(isValidYear);
+        const currentYear = new Date().getFullYear();
+        const year = parseInt(formData.GraduationYear);
+        const isValidYear = year >= currentYear - 100 && year <= currentYear + 10;
+        console.log('Year validation result:', isValidYear, 'for value:', year);
         if (!isValidYear) {
           newErrors.GraduationYear = 'Please enter a valid graduation year';
         }
@@ -152,10 +154,11 @@ export default function ProfilePage() {
 
       // Grade validation (if provided)
       if (formData.Grade) {
-        const isValidGrade = await validateInput('grade or CGPA', formData.Grade);
-        console.log(isValidGrade);
+        const grade = parseFloat(formData.Grade);
+        const isValidGrade = !isNaN(grade) && ((grade >= 0 && grade <= 10) || (grade >= 0 && grade <= 100));
+        console.log('Grade validation result:', isValidGrade, 'for value:', grade);
         if (!isValidGrade) {
-          newErrors.Grade = 'Please enter a valid grade';
+          newErrors.Grade = 'Please enter a valid grade (0-10 for CGPA or 0-100 for percentage)';
         }
       }
     }
@@ -199,9 +202,9 @@ export default function ProfilePage() {
       if (!formData.Skills.trim()) {
         newErrors.Skills = 'Technical Skills are required';
       } else {
-        const isValidSkills = await validateInput('technical skills', formData.Skills);
+        const isValidSkills = formData.Skills.trim().length >= 2;
         if (!isValidSkills) {
-          newErrors.Skills = 'Please enter valid technical skills';
+          newErrors.Skills = 'Please enter at least one technical skill';
         }
       }
 
@@ -209,9 +212,9 @@ export default function ProfilePage() {
       if (!formData.SoftSKills.trim()) {
         newErrors.SoftSKills = 'Soft Skills are required';
       } else {
-        const isValidSoftSkills = await validateInput('soft skills', formData.SoftSKills);
+        const isValidSoftSkills = formData.SoftSKills.trim().length >= 2;
         if (!isValidSoftSkills) {
-          newErrors.SoftSKills = 'Please enter valid soft skills';
+          newErrors.SoftSKills = 'Please enter at least one soft skill';
         }
       }
 
@@ -219,9 +222,9 @@ export default function ProfilePage() {
       if (!formData.Languages.trim()) {
         newErrors.Languages = 'Languages are required';
       } else {
-        const isValidLanguages = await validateInput('languages', formData.Languages);
+        const isValidLanguages = formData.Languages.trim().length >= 2;
         if (!isValidLanguages) {
-          newErrors.Languages = 'Please enter valid languages';
+          newErrors.Languages = 'Please enter at least one language';
         }
       }
 
@@ -229,9 +232,9 @@ export default function ProfilePage() {
       if (!formData.Interests.trim()) {
         newErrors.Interests = 'Interests are required';
       } else {
-        const isValidInterests = await validateInput('interests', formData.Interests);
+        const isValidInterests = formData.Interests.trim().length >= 2;
         if (!isValidInterests) {
-          newErrors.Interests = 'Please enter valid interests';
+          newErrors.Interests = 'Please enter at least one interest';
         }
       }
     }

@@ -1,6 +1,6 @@
 import Groq from "groq-sdk";
 
-const groq = new Groq({ apiKey: "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",dangerouslyAllowBrowser: true });
+const groq = new Groq({ apiKey: "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",dangerouslyAllowBrowser: true });
 
 export const validateInput = async (fieldType, value) => {
     try {
@@ -24,19 +24,26 @@ Validation Rules:
   * The value must be a number between 15 and 90 (inclusive).
 
 - Location (String):
-  * The value must be in the format "City, Country", where both city and country are valid names.
+  * The value must be a valid city name.
 
 - Degree (String):
-  * The value must match recognized degree variations such as "btech", "btech IT", or "Information Technology" (case insensitive).
+  * The value must match recognized degree variations such as "btech", "btech IT", "B.tech", "B.E.", "BCA", "MCA", "Information Technology" or similar academic qualifications (case insensitive).
+  * Common abbreviations and variations of degree names are accepted.
 
 - Institution (String):
-  * The value must match a recognized educational institution name (for example, "Indian Institute of Technology Bombay").
+  * The value must be an educational institution name.
+  * Can be full names or common abbreviations (e.g., "CSPIT-IT", "IIT", "NIT").
+  * Special characters and abbreviations are allowed.
 
 - GraduationYear (Number):
-  * The value must be a valid four-digit year within a plausible range (e.g., between 1900 and 2099).
+  * The value must be a four-digit year.
+  * For future dates: must be within next 10 years.
+  * For past dates: must be within last 100 years.
 
 - Grade (Number):
-  * The value must be a number (decimals allowed) between 0 and 10.
+  * The value must be a number between 0 and 10 for CGPA.
+  * Or between 0 and 100 for percentage.
+  * Decimals are allowed.
 
 - Company (String):
   * The value must be a legitimate company name (for example, "Google" or "Microsoft").
@@ -57,10 +64,12 @@ Validation Rules:
   * The value must list relevant soft skills (for example, "Communication, Leadership, Problem-Solving").
 
 - Languages (String):
-  * The value must list valid languages (for example, "English, Hindi").
+  * The value must list valid languages in any format (for example, "English, Hindi" or "hindi,english,gujarati").
+  * Languages can be in any case (uppercase or lowercase).
 
 - Interests (String):
-  * The value must list clear and meaningful interests (for example, "Artificial Intelligence, Open Source Contribution").
+  * The value must express clear interests or preferences (for example, "Programming", "Web Development", "I love programming", "Coding").
+  * Can be written in natural language or as a list.
 `;
         const completion = await groq.chat.completions.create({
             messages: [

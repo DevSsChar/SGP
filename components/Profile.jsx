@@ -79,34 +79,127 @@ export default function ProfilePage() {
     const newErrors = {};
     
     if (step === 1) {
+      // Full Name validation
       if (!formData.FullName.trim()) {
         newErrors.FullName = 'Full Name is required';
+      } else if (formData.FullName.length < 2) {
+        newErrors.FullName = 'Full Name must be at least 2 characters';
+      } else if (formData.FullName.length > 50) {
+        newErrors.FullName = 'Full Name must not exceed 50 characters';
+      } else if (!/^[a-zA-Z\s]*$/.test(formData.FullName)) {
+        newErrors.FullName = 'Full Name can only contain letters and spaces';
       }
+
+      // Email validation
       if (!formData.Email.trim()) {
         newErrors.Email = 'Email is required';
-      } else if (!/\S+@\S+\.\S+/.test(formData.Email)) {
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.Email)) {
         newErrors.Email = 'Please enter a valid email address';
+      } else if (formData.Email.length > 100) {
+        newErrors.Email = 'Email must not exceed 100 characters';
       }
+
+      // Age validation
       if (!formData.Age) {
         newErrors.Age = 'Age is required';
+      } else if (isNaN(formData.Age) || formData.Age < 16 || formData.Age > 100) {
+        newErrors.Age = 'Age must be between 16 and 100';
       }
+
+      // Location validation
       if (!formData.Location.trim()) {
         newErrors.Location = 'Location is required';
+      } else if (formData.Location.length < 2) {
+        newErrors.Location = 'Location must be at least 2 characters';
+      } else if (formData.Location.length > 100) {
+        newErrors.Location = 'Location must not exceed 100 characters';
       }
     }
 
-    if(step === 4) {
-      if(!formData.Skills.trim()) {
+    if (step === 2) {
+      // Degree validation (if provided)
+      if (formData.Degree.trim() && formData.Degree.length > 100) {
+        newErrors.Degree = 'Degree must not exceed 100 characters';
+      }
+
+      // Institution validation (if provided)
+      if (formData.Institution.trim() && formData.Institution.length > 200) {
+        newErrors.Institution = 'Institution must not exceed 200 characters';
+      }
+
+      // Graduation Year validation (if provided)
+      if (formData.GraduationYear) {
+        const currentYear = new Date().getFullYear();
+        const graduationYear = parseInt(formData.GraduationYear);
+        if (isNaN(graduationYear) || graduationYear < 1950 || graduationYear > currentYear + 5) {
+          newErrors.GraduationYear = 'Please enter a valid graduation year';
+        }
+      }
+
+      // Grade validation (if provided)
+      if (formData.Grade) {
+        const grade = parseFloat(formData.Grade);
+        if (isNaN(grade) || grade < 0 || grade > 10) {
+          newErrors.Grade = 'Grade must be between 0 and 10';
+        }
+      }
+    }
+
+    if (step === 3) {
+      // Company validation (if provided)
+      if (formData.Company.trim() && formData.Company.length > 100) {
+        newErrors.Company = 'Company name must not exceed 100 characters';
+      }
+
+      // Position validation (if provided)
+      if (formData.Position.trim() && formData.Position.length > 100) {
+        newErrors.Position = 'Position must not exceed 100 characters';
+      }
+
+      // Duration validation (if provided)
+      if (formData.Duration) {
+        const selectedDate = new Date(formData.Duration);
+        const currentDate = new Date();
+        if (selectedDate > currentDate) {
+          newErrors.Duration = 'Duration cannot be in the future';
+        }
+      }
+
+      // Description validation (if provided)
+      if (formData.Description.trim() && formData.Description.length > 500) {
+        newErrors.Description = 'Description must not exceed 500 characters';
+      }
+    }
+
+    if (step === 4) {
+      // Technical Skills validation
+      if (!formData.Skills.trim()) {
         newErrors.Skills = 'Technical Skills are required';
+      } else if (formData.Skills.length > 500) {
+        newErrors.Skills = 'Technical Skills must not exceed 500 characters';
       }
-      if(!formData.SoftSKills.trim()) {
+
+      // Soft Skills validation
+      if (!formData.SoftSKills.trim()) {
         newErrors.SoftSKills = 'Soft Skills are required';
+      } else if (formData.SoftSKills.length > 500) {
+        newErrors.SoftSKills = 'Soft Skills must not exceed 500 characters';
       }
-      if(!formData.Languages.trim()) {
+
+      // Languages validation
+      if (!formData.Languages.trim()) {
         newErrors.Languages = 'Languages are required';
+      } else if (formData.Languages.length > 200) {
+        newErrors.Languages = 'Languages must not exceed 200 characters';
+      } else if (!/^[a-zA-Z\s,]*$/.test(formData.Languages)) {
+        newErrors.Languages = 'Languages can only contain letters, spaces, and commas';
       }
-      if(!formData.Interests.trim()) {
+
+      // Interests validation
+      if (!formData.Interests.trim()) {
         newErrors.Interests = 'Interests are required';
+      } else if (formData.Interests.length > 500) {
+        newErrors.Interests = 'Interests must not exceed 500 characters';
       }
     }
     

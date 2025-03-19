@@ -52,10 +52,10 @@ const UserSchema = new mongoose.Schema({
     Interests: {
         type: String,
     },
-    githubId: {
-        type: String,
-        unique: true,
-    },
+    // githubId: {
+    //     type: String,
+    //     unique: true,
+    // },
     updatedAt: {
         type: Date,
         default: Date.now,

@@ -85,7 +85,7 @@ const OtpLogin = () => {
         if (otp === currentOtp) {
           setSuccess("OTP verified successfully!");
           setTimeout(() => {
-            router.replace("/");
+            router.replace("/profile");
           }, 1000);
         } else {
           setError("Invalid OTP. Please try again.");

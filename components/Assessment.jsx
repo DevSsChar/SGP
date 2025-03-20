@@ -9,7 +9,6 @@ export default function Assessment() {
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [showResults, setShowResults] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -43,34 +42,36 @@ export default function Assessment() {
     }
   };
 
-  const handleAnswer = async (answerIndex) => {
-    const newAnswers = [...answers, answerIndex];
+  const handleAnswer = (answerIndex) => {
+    // Create an answer object that includes both question and answer
+    const currentQuestionObj = questions[currentQuestion];
+    const newAnswer = {
+      question: currentQuestionObj.question,
+      selectedAnswer: currentQuestionObj.options[answerIndex],
+      allOptions: currentQuestionObj.options,
+      answerIndex: answerIndex
+    };
+
+    // Add the new answer to the answers array
+    const newAnswers = [...answers, newAnswer];
     setAnswers(newAnswers);
+    console.log({answers: newAnswers});
+    // Create the quiz results object
+    const quizResults = {
+      answers: newAnswers,
+      totalQuestions: questions.length,
+      completedQuestions: newAnswers.length,
+      timestamp: new Date().toISOString()
+    };
+
+    // Store in localStorage
+    localStorage.setItem('quizResults', JSON.stringify(quizResults));
 
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      try {
-        const response = await fetch('/api/generate-results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ answers: newAnswers }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Store results in localStorage
-          localStorage.setItem('quizResults', JSON.stringify(data.recommendations));
-          router.push('/recommendations');
-        } else {
-          setError('Failed to generate results');
-        }
-      } catch (err) {
-        console.error('Error:', err);
-        setError('Failed to generate results. Please try again.');
-      }
+      // Quiz is complete, redirect to recommendations
+      router.push('/recommendations');
     }
   };
 

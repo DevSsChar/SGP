@@ -1,4 +1,6 @@
 "use client";
+import { fetchuser } from '@/actions/useractions';
+import { generateCareerRecommendations } from '@/utils/careerRecommendations';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -8,38 +10,66 @@ export default function Recommendations() {
   const router = useRouter();
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCareers, setSelectedCareers] = useState([]);
 
   useEffect(() => {
-    // Check authentication
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
+    const generateRecommendations = async () => {
+      try {
+        // Check authentication
+        if (status === "unauthenticated") {
+          router.push("/login");
+          return;
+        }
 
-    // Get quiz results from localStorage
-    const results = localStorage.getItem('quizResults');
-    console.log("results",results)
-    if (results) {
-      const parsedResults = JSON.parse(results);
-    //   console.log("parsedResults",parsedResults)
-      console.log("parsedResults",parsedResults)
-      setRecommendations(parsedResults);
-    }
-    setLoading(false);
-  }, [status, router]);
+        // Get quiz results from localStorage
+        const quizResults = localStorage.getItem('quizResults');
+        if (!quizResults) {
+          setError("Please complete the career assessment quiz first.");
+          setLoading(false);
+          return;
+        }
+
+        // Parse quiz results
+        const parsedQuizResults = JSON.parse(quizResults);
+        console.log("Quiz Results:", parsedQuizResults);
+
+        // Fetch user data
+        const userData = await fetchuser(session.user.email);
+        console.log("User Data:", userData);
+
+        if (!userData) {
+          setError("Failed to fetch user profile data.");
+          setLoading(false);
+          return;
+        }
+
+        // Generate career recommendations
+        const recommendationsData = await generateCareerRecommendations(parsedQuizResults, userData);
+        console.log("Generated Recommendations:", recommendationsData);
+
+        if (recommendationsData && recommendationsData.recommendations) {
+          setRecommendations(recommendationsData.recommendations);
+        } else {
+          setError("Failed to generate career recommendations.");
+        }
+      } catch (error) {
+        console.error('Error in generateRecommendations:', error);
+        setError("An error occurred while generating recommendations.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    generateRecommendations();
+  }, [status, router, session?.user?.email]);
 
   const handleCareerSelect = async (career) => {
     try {
-      // Add the career to selected careers if not already selected
       if (!selectedCareers.includes(career.title)) {
-        setSelectedCareers([...selectedCareers, career.title]);
-        
-        // Here we'll add API call to save the selection to user's profile
-        // For now, just store in localStorage
-        localStorage.setItem('selectedCareers', JSON.stringify([...selectedCareers, career.title]));
-        
-        // Redirect to learning path for this career
+        const newSelectedCareers = [...selectedCareers, career.title];
+        setSelectedCareers(newSelectedCareers);
+        localStorage.setItem('selectedCareers', JSON.stringify(newSelectedCareers));
         router.push('/learning-path');
       }
     } catch (error) {
@@ -55,13 +85,13 @@ export default function Recommendations() {
     );
   }
 
-  if (!recommendations || recommendations.length === 0) {
+  if (error || !recommendations || recommendations.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">No Recommendations Available</h1>
-            <p className="text-gray-600 mb-6">Please complete the career assessment quiz first.</p>
+            <p className="text-gray-600 mb-6">{error || "Please complete the career assessment quiz first."}</p>
             <button
               onClick={() => router.push('/assessment')}
               className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
@@ -80,7 +110,7 @@ export default function Recommendations() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">Your Career Recommendations</h1>
           <p className="text-gray-600 mb-8">
-            Based on your quiz responses, here are the career paths that best match your interests and skills.
+            Based on your quiz responses and profile data, here are the career paths that best match your interests and skills.
             Click "I like this career" for any career you're interested in to see relevant learning resources.
           </p>
           

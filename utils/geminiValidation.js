@@ -1,6 +1,6 @@
 import Groq from "groq-sdk";
 
-const groq = new Groq({ apiKey: "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",dangerouslyAllowBrowser: true });
+const groq = new Groq({ apiKey: "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",dangerouslyAllowBrowser: true });
 
 export const validateInput = async (fieldType, value) => {
     try {

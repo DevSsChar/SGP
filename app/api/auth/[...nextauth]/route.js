@@ -43,7 +43,7 @@ const handler = NextAuth({
             SoftSKills: "",
             Languages: "",
             Interests: "",
-            githubId: profile.id,
+            // githubId: profile.id,
           });
         }
 

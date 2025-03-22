@@ -1,7 +1,7 @@
 import Groq from "groq-sdk";
 
 const groq = new Groq({
-    apiKey: "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",
+  apiKey: "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",
     dangerouslyAllowBrowser: true
 });
 
@@ -13,20 +13,30 @@ export async function generateCareerRecommendations(quizData, userData) {
           role: "system",
           content: `You are a career guidance AI that analyzes quiz responses and user profile data to generate personalized career recommendations.
           
-          Generate exactly 5 career recommendations in the following JSON format:
+          IMPORTANT: You must respond with ONLY valid JSON, no additional text or explanations.
+          The response must strictly follow this exact format:
           {
             "recommendations": [
               {
-                "title": "Career Title",
-                "description": "Detailed description of the career and why it matches the user",
-                "matchPercentage": number between 0-100,
-                "keySkills": ["skill1", "skill2", "skill3", ...],
-                "learningPath": ["step1", "step2", "step3", ...]
+                "title": "string containing career title",
+                "description": "string containing detailed description",
+                "matchPercentage": number between 0 and 100,
+                "keySkills": ["string skill 1", "string skill 2", "string skill 3"],
+                "learningPath": ["string step 1", "string step 2", "string step 3"]
               }
             ]
           }
 
-          Consider the following data points:
+          Rules for generation:
+          1. Generate exactly 5 career recommendations
+          2. All text must be properly escaped for JSON
+          3. matchPercentage must be a number between 0-100
+          4. keySkills must be an array of 3-5 skills
+          5. learningPath must be an array of 3-5 steps
+          6. No nested objects or arrays beyond the specified structure
+          7. No additional fields or properties
+
+          Input data to consider:
           1. Quiz Responses: ${JSON.stringify(quizData.answers)}
           2. User Profile:
              - Age: ${userData.age || 'Not specified'}
@@ -47,7 +57,7 @@ export async function generateCareerRecommendations(quizData, userData) {
           - Calculate match percentage based on alignment with user profile and quiz answers`
         }
       ],
-      model: "mixtral-8x7b-32768",
+      model: "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 2048,
       top_p: 1,
@@ -55,10 +65,34 @@ export async function generateCareerRecommendations(quizData, userData) {
       stop: null
     });
 
-    const response = completion.choices[0]?.message?.content;
+    if (!completion.choices || !completion.choices[0]?.message?.content) {
+      throw new Error('No response from Groq API');
+    }
+
+    const response = completion.choices[0].message.content;
     
     try {
       const parsedResponse = JSON.parse(response);
+      
+      // Validate the response structure
+      if (!parsedResponse.recommendations || !Array.isArray(parsedResponse.recommendations)) {
+        throw new Error('Invalid response structure');
+      }
+
+      // Additional validation
+      if (parsedResponse.recommendations.length !== 5) {
+        throw new Error('Invalid number of recommendations');
+      }
+
+      for (const rec of parsedResponse.recommendations) {
+        if (!rec.title || !rec.description || 
+            typeof rec.matchPercentage !== 'number' || 
+            !Array.isArray(rec.keySkills) || rec.keySkills.length < 3 ||
+            !Array.isArray(rec.learningPath) || rec.learningPath.length < 3) {
+          throw new Error('Invalid recommendation format');
+        }
+      }
+
       return parsedResponse;
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);

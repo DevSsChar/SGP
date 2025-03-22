@@ -2,7 +2,7 @@ import Groq from "groq-sdk";
 import { NextResponse } from 'next/server';
 
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: "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",
   dangerouslyAllowBrowser: true
 });
 
@@ -13,17 +13,26 @@ export async function POST(request) {
         {
           role: "system",
           content: `You are a career guidance AI that generates personalized career assessment questions. 
-          Each question should help understand the user's interests, skills, and preferences for career recommendations.
-          Generate the response in the following JSON format:
+          
+          IMPORTANT: You must respond with ONLY valid JSON, no additional text or explanations.
+          The response must strictly follow this exact format:
           {
             "questions": [
               {
-                "question": "question text here",
-                "options": ["option1", "option2", "option3", "option4"]
+                "question": "string containing the question",
+                "options": ["string option 1", "string option 2", "string option 3", "string option 4"]
               }
             ]
           }
-          Generate 10 unique questions with 4 options each. Make sure the questions cover different aspects like:
+
+          Rules for generation:
+          1. Generate exactly 10 questions
+          2. Each question must have exactly 4 options
+          3. All text must be properly escaped for JSON
+          4. No nested objects or arrays beyond the specified structure
+          5. No additional fields or properties
+          
+          Questions should cover:
           - Work environment preferences
           - Skills and strengths
           - Learning style
@@ -31,7 +40,7 @@ export async function POST(request) {
           - Career interests`
         }
       ],
-      model: "mixtral-8x7b-32768",
+      model: "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 1024,
       top_p: 1,
@@ -39,10 +48,35 @@ export async function POST(request) {
       stop: null
     });
 
-    const response = completion.choices[0]?.message?.content;
+    if (!completion.choices || !completion.choices[0]?.message?.content) {
+      console.error('No response from Groq API');
+      return NextResponse.json(
+        { error: 'Failed to generate questions - No response from AI' },
+        { status: 500 }
+      );
+    }
+
+    const response = completion.choices[0].message.content;
     
     try {
       const parsedResponse = JSON.parse(response);
+      
+      // Validate the response structure
+      if (!parsedResponse.questions || !Array.isArray(parsedResponse.questions)) {
+        throw new Error('Invalid response structure');
+      }
+
+      // Additional validation
+      if (parsedResponse.questions.length !== 10) {
+        throw new Error('Invalid number of questions');
+      }
+
+      for (const question of parsedResponse.questions) {
+        if (!question.question || !Array.isArray(question.options) || question.options.length !== 4) {
+          throw new Error('Invalid question format');
+        }
+      }
+
       return NextResponse.json(parsedResponse);
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
@@ -54,7 +88,7 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error generating questions:', error);
     return NextResponse.json(
-      { error: 'Failed to generate questions' },
+      { error: error.message || 'Failed to generate questions' },
       { status: 500 }
     );
   }

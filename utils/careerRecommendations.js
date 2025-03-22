@@ -2,7 +2,7 @@ import Groq from "groq-sdk";
 
 const groq = new Groq({
   apiKey: "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",
-    dangerouslyAllowBrowser: true
+  dangerouslyAllowBrowser: true
 });
 
 export async function generateCareerRecommendations(quizData, userData) {
@@ -14,7 +14,7 @@ export async function generateCareerRecommendations(quizData, userData) {
           content: `You are a career guidance AI that analyzes quiz responses and user profile data to generate personalized career recommendations.
           
           IMPORTANT: You must respond with ONLY valid JSON, no additional text or explanations.
-          The response must strictly follow this exact format:
+          The response must strictly follow this exact format, with no deviations:
           {
             "recommendations": [
               {
@@ -35,6 +35,7 @@ export async function generateCareerRecommendations(quizData, userData) {
           5. learningPath must be an array of 3-5 steps
           6. No nested objects or arrays beyond the specified structure
           7. No additional fields or properties
+          8. Ensure the response is pure JSON with no markdown or additional formatting
 
           Input data to consider:
           1. Quiz Responses: ${JSON.stringify(quizData.answers)}

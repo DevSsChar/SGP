@@ -15,7 +15,7 @@ export async function POST(request) {
           content: `You are a career guidance AI that generates personalized career assessment questions. 
           
           IMPORTANT: You must respond with ONLY valid JSON, no additional text or explanations.
-          The response must strictly follow this exact format:
+          The response must strictly follow this exact format, with no deviations:
           {
             "questions": [
               {
@@ -31,6 +31,7 @@ export async function POST(request) {
           3. All text must be properly escaped for JSON
           4. No nested objects or arrays beyond the specified structure
           5. No additional fields or properties
+          6. Ensure the response is pure JSON with no markdown or additional formatting
           
           Questions should cover:
           - Work environment preferences

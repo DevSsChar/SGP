@@ -2,7 +2,7 @@ import Groq from "groq-sdk";
 import { NextResponse } from 'next/server';
 
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: "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",
   dangerouslyAllowBrowser: true
 });
 

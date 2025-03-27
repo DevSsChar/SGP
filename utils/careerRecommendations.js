@@ -1,13 +1,8 @@
 import Groq from "groq-sdk";
 
 const groq = new Groq({
-<<<<<<< HEAD
-    apiKey: "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",
-    dangerouslyAllowBrowser: true 
-=======
   apiKey: "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",
   dangerouslyAllowBrowser: true
->>>>>>> 1d5b071addda7bfdd741137083ad45245f291f2f
 });
 
 export async function generateCareerRecommendations(quizData, userData) {
@@ -19,17 +14,6 @@ export async function generateCareerRecommendations(quizData, userData) {
           content: `You are a career guidance AI that generates career recommendations.
           IMPORTANT: You must ONLY respond with a valid JSON object. Do not include any text before or after the JSON.
           
-<<<<<<< HEAD
-          Required JSON format (respond with exactly this structure):
-          {
-            "recommendations": [
-              {
-                "title": "Career Title",
-                "description": "Detailed description of the career and why it matches the user",
-                "matchPercentage": 85,
-                "keySkills": ["skill1", "skill2", "skill3"],
-                "learningPath": ["step1", "step2", "step3"]
-=======
           IMPORTANT: You must respond with ONLY valid JSON, no additional text or explanations.
           The response must strictly follow this exact format, with no deviations:
           {
@@ -40,20 +24,10 @@ export async function generateCareerRecommendations(quizData, userData) {
                 "matchPercentage": number between 0 and 100,
                 "keySkills": ["string skill 1", "string skill 2", "string skill 3"],
                 "learningPath": ["string step 1", "string step 2", "string step 3"]
->>>>>>> 1d5b071addda7bfdd741137083ad45245f291f2f
               }
             ]
           }
 
-<<<<<<< HEAD
-          Rules:
-          1. Generate EXACTLY 5 career recommendations
-          2. Each recommendation must follow the exact JSON structure above
-          3. matchPercentage must be a number between 0-100
-          4. keySkills and learningPath must be arrays of strings
-          5. DO NOT include any explanatory text outside the JSON structure
-          6. Ensure all JSON syntax is valid (quotes, commas, brackets)
-=======
           Rules for generation:
           1. Generate exactly 5 career recommendations
           2. All text must be properly escaped for JSON
@@ -73,7 +47,6 @@ export async function generateCareerRecommendations(quizData, userData) {
              - Skills: ${userData.skills || 'Not specified'}
              - Interests: ${userData.interests || 'Not specified'}
              - Languages: ${userData.languages || 'Not specified'}
->>>>>>> 1d5b071addda7bfdd741137083ad45245f291f2f
 
           Base your recommendations on:
           Quiz Responses: ${JSON.stringify(quizData.answers)}
@@ -105,35 +78,6 @@ export async function generateCareerRecommendations(quizData, userData) {
     // Try to clean the response if it contains any text before or after the JSON
     let cleanedResponse = response;
     try {
-<<<<<<< HEAD
-      // Find the first '{' and last '}'
-      const startIndex = response.indexOf('{');
-      const endIndex = response.lastIndexOf('}') + 1;
-      if (startIndex !== -1 && endIndex !== -1) {
-        cleanedResponse = response.slice(startIndex, endIndex);
-      }
-
-      const parsedResponse = JSON.parse(cleanedResponse);
-      
-      // Validate the response structure
-      if (!parsedResponse.recommendations || !Array.isArray(parsedResponse.recommendations)) {
-        throw new Error('Invalid response structure: missing recommendations array');
-      }
-
-      if (parsedResponse.recommendations.length !== 5) {
-        throw new Error('Invalid number of recommendations: expected 5');
-      }
-
-      // Validate each recommendation
-      parsedResponse.recommendations.forEach((rec, index) => {
-        if (!rec.title || !rec.description || !rec.matchPercentage || !rec.keySkills || !rec.learningPath) {
-          throw new Error(`Missing required fields in recommendation ${index + 1}`);
-        }
-        if (typeof rec.matchPercentage !== 'number' || rec.matchPercentage < 0 || rec.matchPercentage > 100) {
-          throw new Error(`Invalid matchPercentage in recommendation ${index + 1}`);
-        }
-      });
-=======
       const parsedResponse = JSON.parse(response);
       
       // Validate the response structure
@@ -154,7 +98,6 @@ export async function generateCareerRecommendations(quizData, userData) {
           throw new Error('Invalid recommendation format');
         }
       }
->>>>>>> 1d5b071addda7bfdd741137083ad45245f291f2f
 
       return parsedResponse;
     } catch (parseError) {

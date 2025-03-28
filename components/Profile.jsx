@@ -202,9 +202,9 @@ export default function ProfilePage() {
       if (!formData.Skills.trim()) {
         newErrors.Skills = 'Technical Skills are required';
       } else {
-        const isValidSkills = formData.Skills.trim().length >= 2;
+        const isValidSkills = await validateInput('Skills', formData.Skills);
         if (!isValidSkills) {
-          newErrors.Skills = 'Please enter at least one technical skill';
+          newErrors.Skills = 'Please enter a valid technical skill';
         }
       }
 
@@ -212,9 +212,9 @@ export default function ProfilePage() {
       if (!formData.SoftSKills.trim()) {
         newErrors.SoftSKills = 'Soft Skills are required';
       } else {
-        const isValidSoftSkills = formData.SoftSKills.trim().length >= 2;
+        const isValidSoftSkills = await validateInput('Soft Skills', formData.SoftSKills);
         if (!isValidSoftSkills) {
-          newErrors.SoftSKills = 'Please enter at least one soft skill';
+          newErrors.SoftSKills = 'Please enter a valid soft skill';
         }
       }
 
@@ -222,9 +222,9 @@ export default function ProfilePage() {
       if (!formData.Languages.trim()) {
         newErrors.Languages = 'Languages are required';
       } else {
-        const isValidLanguages = formData.Languages.trim().length >= 2;
+        const isValidLanguages = await validateInput('Soft Skills', formData.Languages);
         if (!isValidLanguages) {
-          newErrors.Languages = 'Please enter at least one language';
+          newErrors.Languages = 'Please enter a valid language';
         }
       }
 
@@ -232,9 +232,9 @@ export default function ProfilePage() {
       if (!formData.Interests.trim()) {
         newErrors.Interests = 'Interests are required';
       } else {
-        const isValidInterests = formData.Interests.trim().length >= 2;
+        const isValidInterests = await validateInput('Soft Skills', formData.Interests);
         if (!isValidInterests) {
-          newErrors.Interests = 'Please enter at least one interest';
+          newErrors.Interests = 'Please enter a valid interest';
         }
       }
     }

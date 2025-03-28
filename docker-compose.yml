@@ -8,6 +8,47 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - ./logs:/app/logs
     environment:
       - NODE_ENV=development
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     command: npm run dev
+    depends_on:
+      - logging
+
+  logging:
+    image: graylog/graylog:4.3
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"
+    environment:
+      - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+    depends_on:
+      - mongo
+      - elasticsearch
+
+  mongo:
+    image: mongo:4.2
+    volumes:
+      - mongo_data:/data/db
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+volumes:
+  mongo_data:
+  es_data:
+  graylog_data:

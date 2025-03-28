@@ -1,17 +1,13 @@
-import Groq from "groq-sdk";
-
-const groq = new Groq({
-  apiKey: "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",
-  dangerouslyAllowBrowser: true
-});
-
 export async function generateCareerRecommendations(quizData, userData) {
   try {
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: `You are a career guidance AI that analyzes quiz responses and user profile data to generate personalized career recommendations.
+    const response = await fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "llama2",
+        prompt: `You are a career guidance AI that analyzes quiz responses and user profile data to generate personalized career recommendations.
           
           IMPORTANT: You must respond with ONLY valid JSON, no additional text or explanations.
           The response must strictly follow this exact format, with no deviations:
@@ -55,25 +51,20 @@ export async function generateCareerRecommendations(quizData, userData) {
           - Match career suggestions with user's interests
           - Consider location-based opportunities
           - Provide specific, actionable learning paths
-          - Calculate match percentage based on alignment with user profile and quiz answers`
-        }
-      ],
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      max_tokens: 2048,
-      top_p: 1,
-      stream: false,
-      stop: null
+          - Calculate match percentage based on alignment with user profile and quiz answers`,
+        stream: false
+      })
     });
 
-    if (!completion.choices || !completion.choices[0]?.message?.content) {
-      throw new Error('No response from Groq API');
+    if (!response.ok) {
+      throw new Error('Failed to generate recommendations from Ollama');
     }
 
-    const response = completion.choices[0].message.content;
+    const data = await response.json();
+    const aiResponse = data.response;
     
     try {
-      const parsedResponse = JSON.parse(response);
+      const parsedResponse = JSON.parse(aiResponse);
       
       // Validate the response structure
       if (!parsedResponse.recommendations || !Array.isArray(parsedResponse.recommendations)) {
@@ -103,4 +94,4 @@ export async function generateCareerRecommendations(quizData, userData) {
     console.error('Error generating career recommendations:', error);
     throw new Error('Failed to generate career recommendations');
   }
-} 
+}

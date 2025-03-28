@@ -69,7 +69,23 @@ export default function Recommendations() {
       if (!selectedCareers.includes(career.title)) {
         const newSelectedCareers = [...selectedCareers, career.title];
         setSelectedCareers(newSelectedCareers);
+        
+        // Store in both selectedCareers and likedCareers for compatibility
         localStorage.setItem('selectedCareers', JSON.stringify(newSelectedCareers));
+        
+        // Get existing liked careers or initialize empty array
+        const existingLikedCareers = JSON.parse(localStorage.getItem('likedCareers') || '[]');
+        const newLikedCareers = [...existingLikedCareers, {
+          title: career.title,
+          description: career.description,
+          keySkills: career.keySkills,
+          learningPath: career.learningPath,
+          matchPercentage: career.matchPercentage
+        }];
+        
+        // Store the full career data
+        localStorage.setItem('likedCareers', JSON.stringify(newLikedCareers));
+        
         router.push('/learning-path');
       }
     } catch (error) {

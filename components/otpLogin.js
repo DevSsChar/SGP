@@ -11,10 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react"; // Add this import
+import { verifyMobile } from "@/actions/useractions";
 
 const OtpLogin = () => {
   const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const { data: session, update } = useSession();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
@@ -83,7 +86,28 @@ const OtpLogin = () => {
 
       try {
         if (otp === currentOtp) {
-          setSuccess("OTP verified successfully!");
+          // Call the server action to update mobile verification
+          const result = await verifyMobile(phoneNumber, session?.user?.email);
+          console.log(result)
+          if (result.error) {
+            throw new Error(result.error);
+          }
+          
+          // Update session with mobile verification status
+          const updated = await update({
+            ...session,
+            user: {
+              ...session?.user,
+              mvrfy: true
+            }
+          });
+          
+          console.log("Updated session:", updated);
+          console.log(session.user.mvrfy)
+          
+          setSuccess("Mobile number verified successfully!");
+          toast.success("Mobile number verified successfully!");
+          
           setTimeout(() => {
             router.replace("/profile");
           }, 1000);
@@ -91,7 +115,8 @@ const OtpLogin = () => {
           setError("Invalid OTP. Please try again.");
         }
       } catch (error) {
-        setError("Failed to verify OTP. Please try again.");
+        console.error('Error:', error);
+        setError(error.message || "Failed to verify OTP. Please try again.");
       }
     });
   };

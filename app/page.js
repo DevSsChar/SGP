@@ -37,7 +37,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   className="px-8 py-3 rounded-md bg-[hsla(221,83%,53%,1)] text-white hover:bg-[hsla(221,83%,53%,0.9)] transition-colors flex items-center justify-center gap-2 font-medium"
-                  href="/profile"
+                  href="/login"
                 >
                   Get Started
                 </Link>

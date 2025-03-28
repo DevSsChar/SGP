@@ -8,9 +8,9 @@ const Footer=()=>{
             <div className="space-y-4">
               <a className="text-xl font-medium text-[hsla(221,83%,53%,1)] flex items-center gap-2 hover:opacity-80 transition-opacity" href="/">
                 <div className="h-8 w-8 rounded-lg bg-[hsla(221,83%,53%,0.1)] flex items-center justify-center">
-                  <span className="text-[hsla(221,83%,53%,1)] text-lg font-bold">P</span>
+                  <span className="text-[hsla(221,83%,53%,1)] text-lg font-bold">S</span>
                 </div>
-                <span className="font-medium">PathFinder</span>
+                <span className="font-medium">SkillQuest</span>
               </a>
               <p className="text-sm text-muted-foreground max-w-xs">AI-powered career guidance for students and professionals, tailored to your unique profile.</p>
             </div>

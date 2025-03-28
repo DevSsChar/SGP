@@ -8,11 +8,11 @@ const LoginPage = () => {
   const router = useRouter();
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/profile' });
+    signIn('google', { callbackUrl: '/auth-redirect' });
   };
 
   const handleGithubSignIn = () => {
-    signIn('github', { callbackUrl: '/profile' });
+    signIn('github', { callbackUrl: '/auth-redirect' });
   };
 
   return (

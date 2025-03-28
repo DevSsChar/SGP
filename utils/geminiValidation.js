@@ -1,91 +1,48 @@
-import Groq from "groq-sdk";
-
-
-const groq = new Groq({ apiKey: "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",dangerouslyAllowBrowser: true });
+import axios from "axios";
 
 export const validateInput = async (fieldType, value) => {
     try {
-        const prompt = `You are a data validation assistant. Your task is to validate field values according to the criteria outlined below. When presented with a query in the format:
+        // Formatting the validation query
+        const prompt = `You are a data validation assistant. Your task is to validate field values based on predefined rules.
 
-"Is the value "${value}" valid for the field "${fieldType}"?"
-
-respond with exactly "True" if the provided value meets the criteria for that field, or "False" if it does not. Do not include any additional text or commentary.
+Answer strictly with "True" or "False" only—no explanations.
 
 Validation Rules:
+- FullName: Must contain at least a first and last name. Example: "John Doe".
+- Email: Must be a valid email (e.g., "user@example.com").
+- Age: Must be a number between 15 and 90.
+- Location: Must be a valid city name.
+- Degree: Must be a recognized academic degree (e.g., "B.Tech", "MCA").
+- Institution: Must be an educational institution (e.g., "IIT", "Harvard").
+- GraduationYear: Must be a four-digit year, past 100 years or next 10 years.
+- Grade: Must be a number (CGPA 0-10 or percentage 0-100).
+- Company: Must be a legitimate company (e.g., "Google", "Microsoft").
+- Position: Must be a valid job title.
+- Duration: Must be a valid ISO date.
+- Description: Must be a meaningful paragraph.
+- Skills: Must list relevant skills.
+- SoftSkills: Must list soft skills.
+- Languages: Must list languages.
+- Interests: Must state clear interests.
 
-- FullName (String, required):
-  * The value must be a valid full name.
-  * Acceptable formats include: "Dev M Shah", "Shah Dev M", "Shah Dev Mineshkumar", or "Dev Mineshkumar Shah".
-  * The name must include at least a first and last name; a middle name or initial is optional.
+Now, validate the following input:
 
-- Email (String, required, unique):
-  * The value must be a valid email address, such as "username@example.com".
+"Is the value '${value}' valid for the field '${fieldType}'?"
 
-- Age (Number):
-  * The value must be a number between 15 and 90 (inclusive).
+Respond with only "True" or "False".`;
 
-- Location (String):
-  * The value must be a valid city name.
-
-- Degree (String):
-  * The value must match recognized degree variations such as "btech", "btech IT", "B.tech", "B.E.", "BCA", "MCA", "Information Technology" or similar academic qualifications (case insensitive).
-  * Common abbreviations and variations of degree names are accepted.
-
-- Institution (String):
-  * The value must be an educational institution name.
-  * Can be full names or common abbreviations (e.g., "CSPIT-IT", "IIT", "NIT").
-  * Special characters and abbreviations are allowed.
-
-- GraduationYear (Number):
-  * The value must be a four-digit year.
-  * For future dates: must be within next 10 years.
-  * For past dates: must be within last 100 years.
-
-- Grade (Number):
-  * The value must be a number between 0 and 10 for CGPA.
-  * Or between 0 and 100 for percentage.
-  * Decimals are allowed.
-
-- Company (String):
-  * The value must be a legitimate company name (for example, "Google" or "Microsoft").
-
-- Position (String):
-  * The value must correspond to a recognized job title relevant to the company (for example, "Software Engineer" or "Product Manager").
-
-- Duration (Date):
-  * The value must be a valid ISO date (e.g., "2023-06-01T00:00:00Z").
-
-- Description (String):
-  * The value must be a coherent paragraph with substantive content (not placeholder text or gibberish).
-
-- Skills (String):
-  * The value must list relevant skills clearly (for example, "Java, Python, Machine Learning").
-
-- SoftSkills (String):
-  * The value must list relevant soft skills (for example, "Communication, Leadership, Problem-Solving").
-
-- Languages (String):
-  * The value must list valid languages in any format (for example, "English, Hindi" or "hindi,english,gujarati").
-  * Languages can be in any case (uppercase or lowercase).
-
-- Interests (String):
-  * The value must express clear interests or preferences (for example, "Programming", "Web Development", "I love programming", "Coding").
-  * Can be written in natural language or as a list.
-`;
-        const completion = await groq.chat.completions.create({
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
-            model: "llama-3.3-70b-versatile",
+        // Sending request to Ollama
+        const response = await axios.post("http://localhost:11434/api/generate", {
+            model: "llama2",
+            prompt: prompt,
+            stream: false
         });
 
-        const response = completion.choices[0]?.message?.content?.trim().toLowerCase() || 'false';
-        return response === 'true';
+        // Extracting and processing the response
+        const output = response.data.response.trim().toLowerCase();
+        return output === "true";
     } catch (error) {
-        console.error('Validation error:', error);
+        console.error("Validation error:", error.response ? error.response.data : error.message);
         return false;
     }
-}; 
+};

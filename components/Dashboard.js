@@ -156,6 +156,35 @@ export default function Dashboard() {
             <div className="space-y-4">
               <p className="text-gray-600">{userData.Interests}</p>
             </div>
+            <hr className="my-5 border-gray-200" />
+
+            {/* Selected Careers section */}
+            <div>
+              <div className="flex items-center mb-4">
+                <span className="text-2xl mr-2">🚀</span>
+                <h2 className="text-xl font-semibold text-gray-900">Selected Career Paths</h2>
+              </div>
+              <div>
+                {userData.selectedCareers && userData.selectedCareers.length > 0 ? (
+                  <ul className="list-disc pl-5 text-gray-600 mb-4">
+                    {userData.selectedCareers.map((career, index) => (
+                      <li key={index} className="mb-1">{career}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500 italic mb-4">No career paths selected yet. Take the assessment to get recommendations!</p>
+                )}
+
+                <a
+                  href="/assessment"
+                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors inline-block mt-2"
+                >
+                  {userData.selectedCareers && userData.selectedCareers.length > 0
+                    ? "Update Career Assessment"
+                    : "Take Career Assessment"}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -25,15 +25,16 @@ const handler = NextAuth({
     async signIn({ user, account, profile }) {
       try {
         await connectDB();
-        
+
         // Get email from GitHub profile
         const email = profile.email || `${profile.login}@github.com`;
-        
+
         // Check if user already exists
         let dbUser = await User.findOne({ Email: email });
-        
+
         if (!dbUser) {
           // Create new user if doesn't exist
+          // this.session.user.mvrfy = false;
           dbUser = await User.create({
             FullName: profile.name || profile.login,
             Email: email,
@@ -43,7 +44,9 @@ const handler = NextAuth({
             SoftSKills: "",
             Languages: "",
             Interests: "",
-            githubId: profile.id,
+            mobileVerified: false,
+            selectedCareers: []
+            // githubId: profile.id,
           });
         }
 
@@ -66,6 +69,7 @@ const handler = NextAuth({
         const dbUser = await User.findOne({ Email: session.user.email });
         if (dbUser) {
           session.user.dbId = dbUser._id;
+          session.user.mvrfy = dbUser.mobileVerified || false;
         }
       }
       return session;

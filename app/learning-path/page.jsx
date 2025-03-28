@@ -1,26 +1,53 @@
-'use client';
-import LearningPath from '@/components/LearningPath';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+"use client";
+import LearningPath from "@/components/LearningPath";
+import profileDone from "@/utils/profileDone";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function LearningPathPage() {
+const Page = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [profileChecked, setProfileChecked] = useState(false);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
+    const checkAuth = async () => {
+      if (status === "unauthenticated") {
+        router.push("/login");
+        return;
+      }
+      
+      if (status === "authenticated" && session?.user?.mvrfy === false) {
+        router.push("/mobile");
+        return;
+      }
+      
+      if (status === "authenticated" && !profileChecked) {
+        const result = await profileDone(session.user.email);
+        if (!result.isComplete) {
+          alert("Please fill your details first");
+          router.push("/profile");
+        }
+        setProfileChecked(true);
+      }
+    };
+    
+    checkAuth();
+  }, [status, session, router, profileChecked]);
 
   if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+  
+  if (status === "authenticated" && profileChecked) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div>
+        <LearningPath />
       </div>
     );
   }
 
-  return <LearningPath />;
-} 
+  return <p>Checking profile...</p>;
+};
+
+export default Page; 

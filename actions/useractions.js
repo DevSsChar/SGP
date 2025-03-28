@@ -39,3 +39,74 @@ export const updateProfile = async (data, email) => {
         return { error: error.message };
     }
 }
+
+export const verifyMobile = async (phoneNumber, email) => {
+    try {
+        await connectDB();
+        console.log(`Updating mobile verification for email: ${email}`);
+        
+        // Make sure we create a fresh connection
+        // mongoose.set('strictQuery', false);
+        
+        // Use findOneAndUpdate with proper options
+        const updatedUser = await User.findOneAndUpdate(
+            { Email: email },
+            { $set: { mobileVerified: true } },
+            { new: true, runValidators: true }
+        );
+        
+        if (!updatedUser) {
+            console.error(`User not found with email: ${email}`);
+            return { error: "User not found" };
+        }
+        
+        console.log("User after update:", updatedUser);
+        return { success: true };
+    } catch (error) {
+        console.error('Error verifying mobile:', error);
+        return { error: error.message };
+    }
+}
+export const fetchSelectedCareers = async (email) => {
+    await connectDB()
+    console.log(`Fetching selected careers for user with email: ${email}`)
+    
+    try {
+        const user = await User.findOne({ Email: email })
+        if (!user) return { error: "User not found" }
+        
+        return { 
+            success: true, 
+            selectedCareers: user.selectedCareers || [] 
+        }
+    } catch (error) {
+        console.error('Error fetching selected careers:', error)
+        return { error: error.message }
+    }
+}
+
+// Function to update selected careers
+export const updateSelectedCareers = async (email, careers) => {
+    await connectDB()
+    console.log(`Updating selected careers for user with email: ${email}`)
+    
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { Email: email },
+            { selectedCareers: careers },
+            { new: true, runValidators: true }
+        )
+        
+        if (!updatedUser) {
+            return { error: "User not found" }
+        }
+        
+        return { 
+            success: true, 
+            selectedCareers: updatedUser.selectedCareers 
+        }
+    } catch (error) {
+        console.error('Error updating selected careers:', error)
+        return { error: error.message }
+    }
+}

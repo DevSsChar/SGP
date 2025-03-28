@@ -1,5 +1,5 @@
 "use client";
-import { fetchuser } from '@/actions/useractions';
+import { fetchuser,updateSelectedCareers } from '@/actions/useractions';
 import { generateCareerRecommendations } from '@/utils/careerRecommendations';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -67,6 +67,7 @@ export default function Recommendations() {
   const handleCareerSelect = async (career) => {
     try {
       if (!selectedCareers.includes(career.title)) {
+        // Update local state
         const newSelectedCareers = [...selectedCareers, career.title];
         setSelectedCareers(newSelectedCareers);
         
@@ -129,10 +130,10 @@ export default function Recommendations() {
             Based on your quiz responses and profile data, here are the career paths that best match your interests and skills.
             Click "I like this career" for any career you're interested in to see relevant learning resources.
           </p>
-          
+
           <div className="space-y-6">
             {recommendations.map((career, index) => (
-              <div 
+              <div
                 key={index}
                 className="border rounded-lg p-6 hover:shadow-md transition-shadow"
               >
@@ -140,13 +141,13 @@ export default function Recommendations() {
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-2">{career.title}</h2>
                     <p className="text-gray-600 mb-4">{career.description}</p>
-                    
+
                     {/* Match Percentage */}
                     <div className="mb-4">
                       <div className="flex items-center gap-2">
                         <div className="text-sm font-medium text-gray-700">Match Score:</div>
                         <div className="flex-1 h-2 bg-gray-200 rounded-full max-w-[200px]">
-                          <div 
+                          <div
                             className="h-2 bg-blue-500 rounded-full"
                             style={{ width: `${career.matchPercentage}%` }}
                           ></div>
@@ -160,7 +161,7 @@ export default function Recommendations() {
                       <h3 className="text-sm font-medium text-gray-700 mb-2">Key Skills:</h3>
                       <div className="flex flex-wrap gap-2">
                         {career.keySkills.map((skill, skillIndex) => (
-                          <span 
+                          <span
                             key={skillIndex}
                             className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
                           >
@@ -175,7 +176,7 @@ export default function Recommendations() {
                       <h3 className="text-sm font-medium text-gray-700 mb-2">Learning Path:</h3>
                       <div className="flex flex-wrap gap-2">
                         {career.learningPath.map((path, pathIndex) => (
-                          <span 
+                          <span
                             key={pathIndex}
                             className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full"
                           >
@@ -190,14 +191,13 @@ export default function Recommendations() {
                 {/* Like Button */}
                 <button
                   onClick={() => handleCareerSelect(career)}
-                  className={`mt-4 w-full py-2 px-4 rounded-md transition-colors ${
-                    selectedCareers.includes(career.title)
+                  className={`mt-4 w-full py-2 px-4 rounded-md transition-colors ${selectedCareers.includes(career.title)
                       ? 'bg-green-500 text-white hover:bg-green-600'
                       : 'bg-blue-500 text-white hover:bg-blue-600'
-                  }`}
+                    }`}
                 >
-                  {selectedCareers.includes(career.title) 
-                    ? 'Career Selected ✓' 
+                  {selectedCareers.includes(career.title)
+                    ? 'Career Selected ✓'
                     : 'I like this career'}
                 </button>
               </div>

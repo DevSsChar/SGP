@@ -63,6 +63,8 @@ export async function generateCareerRecommendations(quizData, userData) {
     const data = await response.json();
     const aiResponse = data.response;
     
+    // Try to clean the response if it contains any text before or after the JSON
+    let cleanedResponse = response;
     try {
       const parsedResponse = JSON.parse(aiResponse);
       
@@ -88,7 +90,9 @@ export async function generateCareerRecommendations(quizData, userData) {
       return parsedResponse;
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
-      throw new Error('Failed to parse career recommendations');
+      console.error('Raw response:', response);
+      console.error('Cleaned response:', cleanedResponse);
+      throw new Error(`Failed to parse career recommendations: ${parseError.message}`);
     }
   } catch (error) {
     console.error('Error generating career recommendations:', error);

@@ -47,9 +47,9 @@ const Navbar = () => {
               href="/"
             >
               <div className="h-9 w-9 rounded-xl bg-[hsla(221,83%,53%,0.1)] flex items-center justify-center">
-                <span className="text-[hsla(221,83%,53%,1)] text-lg font-bold">P</span>
+                <span className="text-[hsla(221,83%,53%,1)] text-lg font-bold">S</span>
               </div>
-              <span className="font-semibold hidden sm:inline">PathFinder</span>
+              <span className="font-semibold hidden sm:inline">SkillQuest</span>
             </Link>
 
             {/* Desktop Navigation */}

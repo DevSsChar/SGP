@@ -56,6 +56,10 @@ const UserSchema = new mongoose.Schema({
     //     type: String,
     //     unique: true,
     // },
+    selectedCareers: {
+        type: [String],
+        default: [],
+    },
     mobileVerified: {
         type: Boolean,
         default: false,

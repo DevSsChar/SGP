@@ -2,44 +2,52 @@
 import Assessment from "@/components/Assessment";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import profileDone from "@/utils/profileDone";
 
 const Page = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [profileChecked, setProfileChecked] = useState(false);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-    if (status === "authenticated" && session?.user?.mvrfy === false) {
-      router.push("/mobile");
-    }
-    if(status === "authenticated") {
-      const { isComplete } = profileDone(session.user.email);
-      alert("Pls Fill Your Details First")
-      if (!isComplete) {
-          router.push("/profile");
+    const checkAuth = async () => {
+      if (status === "unauthenticated") {
+        router.push("/login");
+        return;
       }
-    }
-  }, [status,session, router]);
+      
+      if (status === "authenticated" && session?.user?.mvrfy === false) {
+        router.push("/mobile");
+        return;
+      }
+      
+      if (status === "authenticated" && !profileChecked) {
+        const result = await profileDone(session.user.email);
+        if (!result.isComplete) {
+          alert("Please fill your details first");
+          router.push("/profile");
+        }
+        setProfileChecked(true);
+      }
+    };
+    
+    checkAuth();
+  }, [status, session, router, profileChecked]);
 
   if (status === "loading") {
     return <p>Loading...</p>;
   }
-  // console.log(session.user.mvrfy)
-  // Render Dashboard if authenticated
-  if (status === "authenticated") {
+  
+  if (status === "authenticated" && profileChecked) {
     return (
       <div>
-        {console.log(session.user.mvrfy)}
         <Assessment />
       </div>
     );
   }
 
-  return null;
+  return <p>Checking profile...</p>;
 };
 
 export default Page;

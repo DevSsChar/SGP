@@ -48,7 +48,7 @@ export const profileDone = async (email) => {
         missingFields.push(field);
       }
     }
-
+    console.log(missingFields);
     return {
       isComplete: missingFields.length === 0,
       missingFields

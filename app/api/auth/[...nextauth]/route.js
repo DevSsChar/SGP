@@ -44,7 +44,8 @@ const handler = NextAuth({
             SoftSKills: "",
             Languages: "",
             Interests: "",
-            mobileVerified: false
+            mobileVerified: false,
+            selectedCareers: []
             // githubId: profile.id,
           });
         }

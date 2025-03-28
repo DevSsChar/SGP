@@ -67,3 +67,46 @@ export const verifyMobile = async (phoneNumber, email) => {
         return { error: error.message };
     }
 }
+export const fetchSelectedCareers = async (email) => {
+    await connectDB()
+    console.log(`Fetching selected careers for user with email: ${email}`)
+    
+    try {
+        const user = await User.findOne({ Email: email })
+        if (!user) return { error: "User not found" }
+        
+        return { 
+            success: true, 
+            selectedCareers: user.selectedCareers || [] 
+        }
+    } catch (error) {
+        console.error('Error fetching selected careers:', error)
+        return { error: error.message }
+    }
+}
+
+// Function to update selected careers
+export const updateSelectedCareers = async (email, careers) => {
+    await connectDB()
+    console.log(`Updating selected careers for user with email: ${email}`)
+    
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { Email: email },
+            { selectedCareers: careers },
+            { new: true, runValidators: true }
+        )
+        
+        if (!updatedUser) {
+            return { error: "User not found" }
+        }
+        
+        return { 
+            success: true, 
+            selectedCareers: updatedUser.selectedCareers 
+        }
+    } catch (error) {
+        console.error('Error updating selected careers:', error)
+        return { error: error.message }
+    }
+}

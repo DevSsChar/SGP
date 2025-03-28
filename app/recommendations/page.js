@@ -12,7 +12,10 @@ const Page = () => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
-  }, [status, router]);
+    if (status === "authenticated" && session?.user?.mvrfy === false) {
+      router.push("/mobile");
+    }
+  }, [status,session, router]);
 
   // Return a loading state until the session is determined
   if (status === "loading") {

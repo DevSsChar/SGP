@@ -39,3 +39,31 @@ export const updateProfile = async (data, email) => {
         return { error: error.message };
     }
 }
+
+export const verifyMobile = async (phoneNumber, email) => {
+    try {
+        await connectDB();
+        console.log(`Updating mobile verification for email: ${email}`);
+        
+        // Make sure we create a fresh connection
+        // mongoose.set('strictQuery', false);
+        
+        // Use findOneAndUpdate with proper options
+        const updatedUser = await User.findOneAndUpdate(
+            { Email: email },
+            { $set: { mobileVerified: true } },
+            { new: true, runValidators: true }
+        );
+        
+        if (!updatedUser) {
+            console.error(`User not found with email: ${email}`);
+            return { error: "User not found" };
+        }
+        
+        console.log("User after update:", updatedUser);
+        return { success: true };
+    } catch (error) {
+        console.error('Error verifying mobile:', error);
+        return { error: error.message };
+    }
+}

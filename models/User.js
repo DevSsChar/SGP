@@ -56,6 +56,10 @@ const UserSchema = new mongoose.Schema({
     //     type: String,
     //     unique: true,
     // },
+    mobileVerified: {
+        type: Boolean,
+        default: false,
+    },
     updatedAt: {
         type: Date,
         default: Date.now,

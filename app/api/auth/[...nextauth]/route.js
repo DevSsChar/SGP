@@ -44,6 +44,7 @@ const handler = NextAuth({
             SoftSKills: "",
             Languages: "",
             Interests: "",
+            mobileVerified: false
             // githubId: profile.id,
           });
         }
@@ -67,6 +68,7 @@ const handler = NextAuth({
         const dbUser = await User.findOne({ Email: session.user.email });
         if (dbUser) {
           session.user.dbId = dbUser._id;
+          session.user.mvrfy = dbUser.mobileVerified || false;
         }
       }
       return session;

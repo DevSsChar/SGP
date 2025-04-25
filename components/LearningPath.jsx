@@ -61,7 +61,7 @@ export default function LearningPath() {
         {likedCareers.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
             <p className="text-gray-600">
-              You haven't liked any careers yet. Visit the Recommendations page to explore career options!
+              You haven&apos;t liked any careers yet. Visit the Recommendations page to explore career options!
             </p>
           </div>
         ) : (

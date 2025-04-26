@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import ChatButton from "../components/Chat/ChatButton";
 import Navbar from "../components/Navbar";
+import Footer from "@/components/footer";
 import "./globals.css";
 import { AuthProvider } from "./Providers";
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <Navbar />
           {children}
+          <Footer />
           <ChatButton />
         </AuthProvider>
       </body>

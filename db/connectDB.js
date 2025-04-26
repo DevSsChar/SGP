@@ -9,7 +9,7 @@ const connectDB = async () => {
     }
 
     try {
-        const conn = await mongoose.connect("mongodb://localhost:27017/Pathfinder", {
+        const conn = await mongoose.connect("mongodb+srv://skillquest:skillquest@cluster0.ckhtw2k.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             connectTimeoutMS: 60000,
